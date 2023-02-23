@@ -6,8 +6,8 @@ Created on Sat Jan 21 22:58:50 2023
 """
 
 import pandas as pd
-from normalized_fiducial_points import *
-from fiducial_point_detection import ecg_delineation
+from ecg_feature_extraction.normalized_fiducial_points import *
+from ecg_feature_extraction.fiducial_point_detection import ecg_delineation
 
 
 normalized_fiducial_personality_traits= []

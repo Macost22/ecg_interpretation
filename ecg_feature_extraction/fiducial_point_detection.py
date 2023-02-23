@@ -9,7 +9,7 @@ import numpy as np
 from scipy.signal import find_peaks
 import pandas as pd
 from scipy.signal import butter, filtfilt
-from visualization_ecg import plot_ecg_fiducial_points
+from ecg_feature_extraction.visualization_ecg import plot_ecg_fiducial_points
 import matplotlib.pyplot as plt
 import neurokit2 as nk
 
@@ -559,22 +559,39 @@ def ecg_delineation(signal, fs):
     # Extracción de puntos fiduciales de la señal con algoritmo de neurokit2
     fiducial_nk = find_fiducial_points_neurokit2(signal_normalized, dic_parameters['gr_r'], fs)
 
-    return fiducial_r, fiducial_nk
+    return fiducial_r, fiducial_nk, signal_filtered
+
+def vector_fiducial(fiducial, signal_zeros):
+
+    signal_zeros[fiducial['ECG_T_Onsets']] = int(1)
+    signal_zeros[fiducial['ECG_T_Offsets']] = int(2)
+    signal_zeros[fiducial['ECG_T_Peaks']] = int(3)
+    signal_zeros[fiducial['ECG_P_Onsets']] = int(4)
+    signal_zeros[fiducial['ECG_P_Offsets']] = int(5)
+    signal_zeros[fiducial['ECG_P_Peaks']] = int(6)
+    signal_zeros[fiducial['ECG_Q_Peaks']] = int(7)
+    signal_zeros[fiducial['ECG_S_Peaks']] = int(8)
+    signal_zeros[fiducial['ECG_R_Peaks']] = int(9)
+    return signal_zeros
+
 
 
 if __name__ == '__main__':
     # Se cargan los datos de ecg
-    
-    path='C:/Users/melis/Desktop/Bioseñales/ECG_veronica/ecg_70.txt'
-    #path = 'C:/Users/melis/Desktop/Bioseñales/MIMIC/MIMIC_arritmia.txt'
-    ecg_70 = pd.read_csv(path, sep=" ")
-    # Se transponen los datos  (68,240000) = (individuo, observaciones)
-    ecg_70 = ecg_70.transpose()
-    # Se modifican los índices para que sean de 0 a 67
-    ecg_70.index = list(range(len(ecg_70)))
-    ecg1=ecg_70.iloc[0]
-    fs_signal = 2000
 
+    path_arritmia = 'C:/Users/melis/Desktop/Bioseñales/MIMIC/MIMIC_arritmia.txt'
+
+    ecg = pd.read_csv(path_arritmia, sep=" ", index_col=0)
+    # Se transponen los datos  (68,240000) = (individuo, observaciones)
+    ecg = ecg.transpose()
+    # Se modifican los índices para que sean de 0 a 67
+    ecg.index = list(range(len(ecg)))
+    ecg1=ecg.iloc[22]
+
+    # Estos tiene una fs= 250,  Wn_low = 60 y Wn_high = 0.5
+    fs_signal = 250
+    Wn_low = 60
+    Wn_high = 0.5
 
     fiducial_points_R, fiducial_points_nk = ecg_delineation(signal=ecg1, fs=fs_signal)
 
@@ -583,5 +600,5 @@ if __name__ == '__main__':
     titulo2 = 'Algoritmo R'
     plot_ecg_fiducial_points(fiducial_points_nk, t_start, t_end, fs_signal, titulo1)
     plt.show()
-    #plot_ecg_fiducial_points(fiducial_points_R, t_start, t_end, fs_signal, titulo2)
-    #plt.show()
+    plot_ecg_fiducial_points(fiducial_points_R, t_start, t_end, fs_signal, titulo2)
+    plt.show()
