@@ -21,11 +21,14 @@ def main(signal, fs):
 
 
 if __name__ == '__main__':
+    import pandas as pd
     # Estos tiene una fs= 250,  Wn_low = 60 y Wn_high = 0.5
-    path_arritmia = 'C:/Users/melis/Desktop/Bioseñales/MIMIC/MIMIC_arritmia.txt'
+    #path_arritmia = 'D:/Bioseñales/MIMIC/MIMIC_arritmia.txt'
     # signals = load_data_arrhythmia(path_arritmia)
-    signal = load_data_arrhythmia(path_arritmia)
-
+    #signal = load_data_arrhythmia(path_arritmia)
+    path= 'D:/Joven Investigador/ecg_interpretation/humat_curie/ecg_8.csv'
+    ecg = pd.read_csv(path, sep=",", index_col=0)
+    ecg_nue=ecg.to_numpy().reshape((len(ecg)))
     fs = 250
-    vector, features = main(signal.iloc[8], fs)
+    vector, features = main(ecg_nue, fs)
 
